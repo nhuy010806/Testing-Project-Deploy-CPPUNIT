@@ -1,0 +1,11 @@
+id,s1,s2,s3,expected,type,note
+1,hello world,world,angular,hello angular,N,Thay the 1 tu o cuoi
+2,apple banana apple,apple,orange,orange banana orange,N,Thay the nhieu cho
+3,aaa,a,b,bbb,N,Thay the ky tu don
+4,hello,nomatch,xyz,hello,N,Khong tim thay s2
+5,test,test,new,new,N,Thay the bang chuoi khac
+6,hello world, ,-,hello-world,N,Thay the khoang trang
+7,,a,b,,B,s1 la chuoi rong
+8,abc,,x,abc,B,s2 la chuoi rong
+9,abc,abc,xyz,xyz,B,s2 bang dung s1
+10,a,a,a,a,B,Cac chuoi deu la 1 ky tu giong nhau

@@ -1,0 +1,11 @@
+id,year,expected,type,note
+1,2000,TRUE,N,Chia het cho 400
+2,2004,TRUE,N,Chia het cho 4 nhung khong cho 100
+3,1900,FALSE,N,Chia het cho 100 nhung khong cho 400
+4,2023,FALSE,N,Nam thuong khong chia het cho 4
+5,2021,FALSE,N,Nam thuong le
+6,-100,EXCEPTION,A,Nam am
+7,1000,EXCEPTION,A,Nam nho hon 1582
+8,1581,EXCEPTION,B,Bien ngoai duoi: 1581
+9,1582,FALSE,B,Bien trong duoi: 1582
+10,1584,TRUE,B,Bien nam nhuan dau tien: 1584

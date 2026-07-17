@@ -1,0 +1,11 @@
+id,num,expected,type,note
+1,3,TRUE,N,So nguyen to le 3
+2,5,TRUE,N,So nguyen to le 5
+3,4,FALSE,N,Hop so chan 4
+4,9,FALSE,N,Hop so le 9
+5,-5,EXCEPTION,A,So am nho hon bien
+6,1005,EXCEPTION,A,So lon hon bien
+7,-1,EXCEPTION,B,Bien ngoai duoi: -1
+8,0,FALSE,B,Bien trong duoi: 0
+9,1000,FALSE,B,Bien trong tren: 1000
+10,1001,EXCEPTION,B,Bien ngoai tren: 1001

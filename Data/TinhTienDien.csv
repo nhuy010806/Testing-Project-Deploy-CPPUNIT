@@ -1,0 +1,11 @@
+id,chiSoCu,chiSoMoi,expected,type,note
+1,100,140,73832,N,Tieu thu 40 kWh (Bac 1). VAT 10%
+2,100,180,149512,N,Tieu thu 80 kWh (Bac 2). VAT 10%
+3,200,350,298430,N,Tieu thu 150 kWh (Bac 3). VAT 10%
+4,0,250,548680,N,Tieu thu 250 kWh (Bac 4). VAT 10%
+5,150,100,-1,A,Chi so cu lon hon chi so moi
+6,-10,100,-1,A,Chi so cu am
+7,0,0,0,B,Tieu thu dung 0 kWh
+8,100,150,92290,B,Tieu thu dung 50 kWh (Bien Bac 1)
+9,100,200,187660,B,Tieu thu dung 100 kWh (Bien Bac 2)
+10,100,90,-1,B,Chi so moi am so voi chi so cu

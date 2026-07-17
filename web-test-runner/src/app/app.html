@@ -1,0 +1,435 @@
+<!-- UEL Official Web Branding Header -->
+<header class="uel-web-header">
+  <div class="uel-header-container">
+    <!-- Left Logo & School Name -->
+    <div class="uel-header-left">
+      <img src="/assets/Logo_UEL.png" alt="UEL Logo" class="uel-logo-img">
+      <div class="uel-school-text">
+        <div class="uel-school-sub">ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH</div>
+        <div class="uel-school-main">TRƯỜNG ĐẠI HỌC KINH TẾ - LUẬT</div>
+      </div>
+      <div class="uel-separator"></div>
+      <div class="uel-app-title">CPPUNIT - Software Testing Project</div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Workspace App Container -->
+<div class="app-container">
+  <div class="layout-grid">
+    
+    <!-- Left Column (Configuration & History) -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      <!-- Configuration Card -->
+      <aside class="card">
+        <div class="section-title">
+          <i class="bi bi-sliders"></i>
+          <h2>Test Configuration</h2>
+        </div>
+
+        <!-- Preset Selection -->
+        <div class="form-group">
+          <label for="presetSelect">Test Scenario Preset</label>
+          <select 
+            id="presetSelect" 
+            class="form-control" 
+            [value]="preset()" 
+            (change)="onPresetChange($event)"
+            [disabled]="isRunning()"
+          >
+            <option value="prime">FUNC01 - primeCheck (0 - 1000)</option>
+            <option value="leap">FUNC02 - IsLeapYear (>= 1582)</option>
+            <option value="bintodec">FUNC03 - BinToDec (Binary to Dec)</option>
+            <option value="triangle">FUNC04 - Triangle Classifier</option>
+            <option value="huychuoi">FUNC05 - HuyChuoi (Delete chars)</option>
+            <option value="thaythe">FUNC06 - ThayThe (Replace substrings)</option>
+            <option value="tinhtiendien">FUNC07 - TinhTienDien (Electricity bill)</option>
+            <option value="solvequadratic">FUNC08 - SolveQuadratic (Roots status)</option>
+            <option value="custom">Custom JavaScript Runner</option>
+          </select>
+        </div>
+
+        <!-- File Upload Zone -->
+        <div class="form-group">
+          <label>Import Data File</label>
+          
+          <div 
+            *ngIf="!fileName()" 
+            class="upload-zone" 
+            [class.dragover]="isDragOver()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave()"
+            (drop)="onDrop($event)"
+            (click)="fileInput.click()"
+          >
+            <i class="bi bi-cloud-arrow-up upload-icon"></i>
+            <span class="upload-text">Drag & drop Excel or CSV here</span>
+            <span class="upload-subtext">or click to browse from files (.xlsx, .xls, .csv)</span>
+            <input 
+              #fileInput 
+              type="file" 
+              class="file-input" 
+              (change)="onFileSelected($event)" 
+              accept=".xlsx,.xls,.csv"
+            >
+          </div>
+
+          <!-- File Loaded State -->
+          <div *ngIf="fileName()" class="file-loaded-banner animate-fade-in">
+            <div class="file-info">
+              <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+              <div class="file-info-text">
+                <strong>{{ fileName() }}</strong>
+                <span>{{ formatBytes(fileSize()) }} | {{ csvData().length }} rows</span>
+              </div>
+            </div>
+            <button class="btn-remove-file" (click)="removeFile()" title="Remove file">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Mapping Selector (Only if file loaded) -->
+        <div *ngIf="csvData().length > 0" class="mapping-card animate-fade-in">
+          <div class="mapping-title">
+            <span>Column Parameter Mapping</span>
+            <i class="bi bi-link-45deg"></i>
+          </div>
+
+          <div class="mapping-grid">
+            <!-- ID Mapping -->
+            <div class="mapping-row">
+              <label>Test Case ID</label>
+              <select class="form-control" [(ngModel)]="idColumn">
+                <option *ngFor="let header of headers()" [value]="header">{{ header }}</option>
+              </select>
+            </div>
+
+            <!-- Expected Mapping -->
+            <div class="mapping-row">
+              <label>Expected Result</label>
+              <select class="form-control" [(ngModel)]="expectedColumn">
+                <option *ngFor="let header of headers()" [value]="header">{{ header }}</option>
+              </select>
+            </div>
+
+            <!-- Input Parameters Mapping -->
+            <div class="mapping-row">
+              <label>Input Values</label>
+              <div class="inputs-selector">
+                <ng-container *ngFor="let header of headers()">
+                  <div 
+                    *ngIf="header !== idColumn() && header !== expectedColumn()"
+                    class="input-chip" 
+                    [class.active]="inputColumns().includes(header)"
+                    (click)="toggleInputColumn(header)"
+                  >
+                    <i class="bi" [class.bi-check-circle-fill]="inputColumns().includes(header)" [class.bi-plus-circle]="!inputColumns().includes(header)"></i>
+                    {{ header }}
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom JS Script Code Area -->
+        <div *ngIf="preset() === 'custom'" class="code-area-container animate-fade-in">
+          <div class="code-header">
+            <span class="code-label">JavaScript Runner Logic</span>
+            <i class="bi bi-braces-asterisk" style="color: var(--uel-orange-primary);"></i>
+          </div>
+          <textarea 
+            class="form-control code-editor" 
+            rows="12" 
+            [(ngModel)]="customJsCode"
+            placeholder="// JavaScript code..."
+          ></textarea>
+        </div>
+
+        <!-- Run Tests Button -->
+        <div style="margin-top: 24px;">
+          <button 
+            class="btn btn-primary" 
+            style="width: 100%; height: 46px; font-size: 15px; border-radius: 8px;"
+            [disabled]="csvData().length === 0 || isRunning()"
+            (click)="runTests()"
+          >
+            <span *ngIf="isRunning()" class="loader"></span>
+            <i *ngIf="!isRunning()" class="bi bi-play-fill"></i>
+            {{ isRunning() ? 'Running Tests...' : 'Run Test Suite' }}
+          </button>
+        </div>
+
+        <!-- Demo note -->
+        <div style="margin-top: 16px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+          <i class="bi bi-info-circle" style="color: var(--uel-orange-primary); margin-right: 4px;"></i>
+          <span>Mock data is loaded by default. You can test immediately by clicking <strong>Run Test Suite</strong> or upload your own sheet.</span>
+        </div>
+      </aside>
+
+      <!-- Browser Run History Card -->
+      <div *ngIf="testHistory().length > 0" class="card animate-fade-in" style="padding: 20px;">
+        <div class="section-title" style="margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color);">
+          <i class="bi bi-clock-history"></i>
+          <h2 style="font-size: 15px;">Browser Run History</h2>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto; padding-right: 4px;">
+          <div 
+            *ngFor="let item of testHistory()" 
+            style="background: rgba(0,0,0,0.02); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; font-size: 12px; display: flex; justify-content: space-between; align-items: center;"
+          >
+            <div style="min-width: 0; flex: 1;">
+              <div style="font-weight: 700; color: var(--uel-blue-dark); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+                {{ item.fileName }}
+              </div>
+              <div style="color: var(--text-muted); font-size: 11px; margin-top: 2px;">
+                {{ item.presetName }} • {{ item.timestamp }}
+              </div>
+            </div>
+            
+            <div style="text-align: right; margin-left: 12px;">
+              <span 
+                class="badge" 
+                [class.badge-pass]="item.passRate === 100" 
+                [class.badge-fail]="item.passRate < 100"
+                style="padding: 2px 6px; font-size: 10px;"
+              >
+                {{ item.passRate }}%
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <button 
+          class="btn btn-secondary" 
+          style="width: 100%; margin-top: 14px; padding: 6px 12px; font-size: 11px; border-radius: 6px; gap: 4px;"
+          (click)="clearHistory()"
+        >
+          <i class="bi bi-trash3"></i> Clear History
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Results Panel -->
+    <main class="card" style="min-height: 500px;">
+      <div class="section-title">
+        <i class="bi bi-card-checklist"></i>
+        <h2>Execution Output & Analytics</h2>
+      </div>
+
+      <!-- Placeholder before run -->
+      <div *ngIf="testResults().length === 0" class="no-data-placeholder animate-fade-in">
+        <i class="bi bi-play-circle" style="color: var(--uel-blue-primary);"></i>
+        <p>No tests have been executed yet.</p>
+        <p style="font-size: 13px; margin-top: 8px;">Click "Run Test Suite" to execute the test suite on the loaded data set.</p>
+      </div>
+
+      <!-- Active results panel -->
+      <div *ngIf="testResults().length > 0" class="animate-fade-in">
+        
+        <!-- Summary Stats -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-title">Total Cases</div>
+            <div class="stat-value">{{ totalCount() }}</div>
+          </div>
+          <div class="stat-card passed">
+            <div class="stat-title">Passed</div>
+            <div class="stat-value">{{ passedCount() }}</div>
+          </div>
+          <div class="stat-card failed">
+            <div class="stat-title">Failed</div>
+            <div class="stat-value">{{ failedCount() }}</div>
+          </div>
+          <div class="stat-card rate">
+            <div class="stat-title">Pass Rate</div>
+            <div class="stat-value">{{ passRate() }}%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Duration</div>
+            <div class="stat-value" style="font-family: var(--font-mono); font-size: 20px;">{{ executionTimeTotal().toFixed(1) }}ms</div>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span>Overall Test Run Status</span>
+            <span>{{ passedCount() }} / {{ totalCount() }} Passed</span>
+          </div>
+          <div class="progress-wrapper">
+            <div 
+              class="progress-bar-fill" 
+              [class.success]="failedCount() === 0"
+              [class.failed]="failedCount() > 0"
+              [style.width.%]="passRate()"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Filter, Search & Export Controls -->
+        <div class="results-header-actions">
+          <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Search by ID, inputs, or values..."
+              [(ngModel)]="searchQuery"
+            >
+          </div>
+          
+          <button 
+            class="btn btn-secondary" 
+            style="padding: 10px 14px; font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; border-radius: 8px;"
+            (click)="exportResults()"
+            title="Export Results to Excel"
+          >
+            <i class="bi bi-file-earmark-excel-fill" style="color: #10b981; font-size: 16px;"></i>
+            Export Excel
+          </button>
+          
+          <div class="filter-tabs">
+            <button 
+              class="filter-tab all" 
+              [class.active]="filterType() === 'all'" 
+              (click)="filterType.set('all')"
+            >
+              All ({{ totalCount() }})
+            </button>
+            <button 
+              class="filter-tab passed" 
+              [class.active]="filterType() === 'pass'" 
+              (click)="filterType.set('pass')"
+            >
+              Passed ({{ passedCount() }})
+            </button>
+            <button 
+              class="filter-tab failed" 
+              [class.active]="filterType() === 'fail'" 
+              (click)="filterType.set('fail')"
+            >
+              Failed ({{ failedCount() }})
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Grid/Table -->
+        <div class="table-container">
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 80px;">ID</th>
+                  <th>Inputs</th>
+                  <th style="width: 150px;">Expected</th>
+                  <th style="width: 150px;">Actual</th>
+                  <th style="width: 110px;">Result</th>
+                  <th style="width: 60px;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr 
+                  *ngFor="let res of filteredResults()" 
+                  (click)="openDetail(res)" 
+                  style="cursor: pointer;"
+                >
+                  <td class="mono" style="font-weight: 600; color: var(--uel-blue-primary);">#{{ res.id }}</td>
+                  <td>
+                    <div class="inputs-pill-list">
+                      <span *ngFor="let key of getInputKeys(res.inputs)" class="input-pill">
+                        {{ key }}:<strong>{{ res.inputs[key] }}</strong>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="mono">{{ res.expected }}</td>
+                  <td class="mono" [style.color]="res.isPass ? '#059669' : '#ef4444'" style="font-weight: 600;">{{ res.actual }}</td>
+                  <td>
+                    <span class="badge" [class.badge-pass]="res.isPass" [class.badge-fail]="!res.isPass">
+                      <i class="bi" [class.bi-check-circle-fill]="res.isPass" [class.bi-x-circle-fill]="!res.isPass"></i>
+                      {{ res.isPass ? 'PASS' : 'FAIL' }}
+                    </span>
+                  </td>
+                  <td>
+                    <i class="bi bi-chevron-right" style="color: var(--text-disabled);"></i>
+                  </td>
+                </tr>
+                <tr *ngIf="filteredResults().length === 0">
+                  <td colspan="6" style="text-align: center; padding: 32px 0; color: var(--text-muted);">
+                    No matching test cases found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+</div>
+
+<!-- Modal Detail Dialog -->
+<div *ngIf="selectedResult() as res" class="modal-overlay animate-fade-in" (click)="closeDetail()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
+    
+    <div class="modal-header">
+      <span class="badge" [class.badge-pass]="res.isPass" [class.badge-fail]="!res.isPass">
+        <i class="bi" [class.bi-check-circle-fill]="res.isPass" [class.bi-x-circle-fill]="!res.isPass"></i>
+        {{ res.isPass ? 'PASS' : 'FAIL' }}
+      </span>
+      <h3 style="margin: 0; font-size: 18px; color: var(--uel-blue-dark);">Test Case Detail #{{ res.id }}</h3>
+    </div>
+
+    <div class="modal-body">
+      <!-- Input Parameters -->
+      <div class="modal-row">
+        <span class="modal-label">Input Parameters</span>
+        <div class="modal-value">
+          <div class="inputs-pill-list">
+            <span *ngFor="let key of getInputKeys(res.inputs)" class="input-pill" style="font-size: 12px; padding: 4px 8px;">
+              {{ key }}: <strong>{{ res.inputs[key] }}</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Expected -->
+      <div class="modal-row">
+        <span class="modal-label">Expected Value</span>
+        <span class="modal-value mono" style="font-weight: 600;">{{ res.expected }}</span>
+      </div>
+
+      <!-- Actual -->
+      <div class="modal-row">
+        <span class="modal-label">Actual Value</span>
+        <span class="modal-value mono" [style.color]="res.isPass ? '#059669' : '#ef4444'" style="font-weight: 600;">{{ res.actual }}</span>
+      </div>
+
+      <!-- Execution Time -->
+      <div class="modal-row">
+        <span class="modal-label">Execution Time</span>
+        <span class="modal-value mono">{{ res.execTimeMs.toFixed(3) }} ms</span>
+      </div>
+
+      <!-- Status / Stack Info -->
+      <div *ngIf="!res.isPass" class="modal-row" style="border-bottom: none;">
+        <span class="modal-label" style="color: var(--color-danger);">Failure Note</span>
+        <div class="modal-value" style="color: #ef4444; background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.15); border-radius: 6px; padding: 12px; font-family: var(--font-mono); font-size: 13px; line-height: 1.5;">
+          {{ res.errorMsg || 'Kết quả thực tế (' + res.actual + ') khác với kết quả kỳ vọng (' + res.expected + ').' }}
+        </div>
+      </div>
+
+      <div *ngIf="res.isPass" class="modal-row" style="border-bottom: none;">
+        <span class="modal-label" style="color: var(--color-success);">Success Note</span>
+        <div class="modal-value" style="color: #059669; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px; padding: 12px; font-size: 13px;">
+          Test case passed. The code returned the correct response matching the expected value.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

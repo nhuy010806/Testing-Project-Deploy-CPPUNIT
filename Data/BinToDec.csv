@@ -1,0 +1,11 @@
+id,bin,expected,type,note
+1,101,5,N,Nhi phan thong thuong
+2,0,0,N,Nhi phan 0
+3,1111,15,N,Nhi phan toan 1
+4,1010,10,N,Nhi phan chan
+5,102,EXCEPTION,A,Chua ky tu la 2
+6,abc,EXCEPTION,A,Chua chu cai
+7,,EXCEPTION,A,Chuoi rong
+8,1,1,B,Bien nho nhat: 1
+9,00000,0,B,Nhieu so 0 dung dau
+10,1111111111111111,65535,B,Bien lon 16 bits

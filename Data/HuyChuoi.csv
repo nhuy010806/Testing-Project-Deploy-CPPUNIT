@@ -1,0 +1,11 @@
+id,s,n,p,expected,type,note
+1,HELLO,2,1,HLO,N,Xoa 2 ky tu o giua
+2,ABCDEF,3,0,DEF,N,Xoa 3 ky tu o dau
+3,TEST,1,3,TES,N,Xoa 1 ky tu cuoi
+4,PROGRAMMING,5,3,PROING,N,Xoa 5 ky tu o giua
+5,HELLO,2,-1,EXCEPTION,A,Vi tri p am
+6,HELLO,2,5,EXCEPTION,A,Vi tri p vuot qua chieu dai s-1
+7,,1,0,EXCEPTION,A,Chuoi s rong
+8,A,1,0,,B,Xoa ky tu duy nhat
+9,HELLO,0,2,HELLO,B,Xoa n=0 ky tu
+10,HELLO,10,2,HE,B,Xoa vuot qua so ky tu con lai
