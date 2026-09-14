@@ -1,6 +1,6 @@
 # CPPUNIT - Software Testing Project
 
-An advanced, high-fidelity web-based test runner designed for students at the **University of Economics and Law (UEL)** and developers worldwide to perform automated black-box testing. This application supports running a set of 8 pre-defined academic testing scenarios, importing custom testing sheets, mapping parameters dynamically, analyzing success rates, exporting execution reports, and caching history locally.
+An advanced, high-fidelity web-based test runner designed for students at the **University of Economics and Law (UEL)**  to perform automated black-box testing. This application supports running a set of 8 pre-defined academic testing scenarios, importing custom testing sheets, mapping parameters dynamically, analyzing success rates, exporting execution reports, and caching history locally.
 
 👉 **Live Demo Website:** [https://cppunit-c8d48.web.app](https://cppunit-c8d48.web.app)
 
